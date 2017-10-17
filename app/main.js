@@ -11,7 +11,6 @@ mongoose.Promise  = require('bluebird')
 const bodyParser  = require('body-parser')
 const path        = require('path')
 const fs          = require('fs')
-const util        = require('util')
 const dns         = require('dns')
 
 /* https://nodejs.org/api/dns.html#dns_dns_lookup_hostname_options_callback */
