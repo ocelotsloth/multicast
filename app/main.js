@@ -11,6 +11,15 @@ mongoose.Promise  = require('bluebird')
 const bodyParser  = require('body-parser')
 const path        = require('path')
 const fs          = require('fs')
+const util        = require('util')
+const dns         = require('dns')
+
+/* https://nodejs.org/api/dns.html#dns_dns_lookup_hostname_options_callback */
+const dnsOptions = {
+  family: 4,
+  all: false,
+  verbatim: true
+}
 
 const Chromecast  = require('./models/Chromecast')
 const Channel     = require('./models/Channel')
@@ -467,6 +476,28 @@ app.post('/takeover/end', (req, res) => {
     c.emit('refresh')
   })
   res.sendStatus(200)
+})
+
+/* Local DNS Support */
+
+app.get('/dns/', (req, res) => {
+  let hostname = req.query.hostname
+
+  /* query dns using system utils */
+  dns.lookup(hostname, dnsOptions, (err, address, family) => {
+    res.setHeader('Content-Type', 'application/json');
+    let reply = {
+      err: null,
+      address: null
+    }
+    if (err) {
+      reply.err = err.code
+    }
+    else {
+      reply.address = address
+    }
+    res.send(JSON.stringify(reply))
+  })
 })
 
 /* Server */
